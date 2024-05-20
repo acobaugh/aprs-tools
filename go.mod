@@ -3,8 +3,8 @@ module github.com/acobaugh/aprs-tools
 go 1.19
 
 require (
+	github.com/acobaugh/aprs v0.0.0-20240520041845-4bdcc3620431 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
-	github.com/ebarkie/aprs v1.0.4 // indirect
 	github.com/ebarkie/weatherlink v1.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

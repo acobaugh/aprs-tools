@@ -28,8 +28,7 @@ ssid: 13
 interval: 10m
 lat: ""
 lon: ""
-alt: 0
-type: AW
+comment: github.com/acobaugh/aprs-tools
 influxdb:
   url: http://localhost:8086
   db: rtl_433_wx
@@ -104,8 +103,7 @@ LOOP:
 		wxData.Zero()
 		wxData.Lat = viper.GetFloat64("lat")
 		wxData.Lon = viper.GetFloat64("lon")
-		wxData.Altimeter = viper.GetFloat64("alt")
-		wxData.Type = viper.GetString("type")
+		wxData.Type = viper.GetString("comment")
 
 		result, err := queryAPI.Query(
 			context.TODO(), fmt.Sprintf(
