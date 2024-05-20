@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ebarkie/aprs"
+	"github.com/acobaugh/aprs"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
@@ -24,9 +24,11 @@ var (
 
 	defaultConfig = []byte(`
 callsign: ""
+ssid: 13
 interval: 10m
 lat: ""
 lon: ""
+comment: github.com/acobaugh/aprs-tools
 influxdb:
   url: http://localhost:8086
   db: rtl_433_wx
@@ -99,10 +101,10 @@ LOOP:
 	for ; true; <-ticker.C {
 		var wxData aprs.Wx
 		wxData.Zero()
-
 		wxData.Lat = viper.GetFloat64("lat")
 		wxData.Lon = viper.GetFloat64("lon")
-		wxData.Type = "DvsVP2+"
+		wxData.Type = viper.GetString("comment")
+
 		result, err := queryAPI.Query(
 			context.TODO(), fmt.Sprintf(
 				`from(bucket: "%s/%s")
@@ -134,7 +136,7 @@ LOOP:
 				case "humidity":
 					wxData.Humidity = int(math.Round(result.Record().Value().(float64)))
 				case "light_lux":
-					wxData.SolarRad = int(math.Round(result.Record().Value().(float64)))
+					wxData.SolarRad = int(math.Round(result.Record().Value().(float64)) / 126) // lux / 126 = W/m^2
 				case "wind_dir_deg":
 					wxData.WindDir = int(math.Round(result.Record().Value().(float64)))
 				case "wind_max_m_s":
@@ -155,7 +157,7 @@ LOOP:
 
 			f := aprs.Frame{
 				Dst:  aprs.Addr{Call: "APRS"},
-				Src:  aprs.Addr{Call: viper.GetString("callsign"), SSID: 13},
+				Src:  aprs.Addr{Call: viper.GetString("callsign"), SSID: viper.GetInt("ssid")},
 				Path: aprs.Path{aprs.Addr{Call: "TCPIP", Repeated: true}},
 				Text: wxData.String(),
 			}
